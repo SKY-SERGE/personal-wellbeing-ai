@@ -9,16 +9,393 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      chat_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_user: boolean | null
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_user?: boolean | null
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_user?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_patients: {
+        Row: {
+          assigned_at: string
+          id: string
+          user_id_doctor: string
+          user_id_patient: string
+        }
+        Insert: {
+          assigned_at?: string
+          id?: string
+          user_id_doctor: string
+          user_id_patient: string
+        }
+        Update: {
+          assigned_at?: string
+          id?: string
+          user_id_doctor?: string
+          user_id_patient?: string
+        }
+        Relationships: []
+      }
+      exercise_entries: {
+        Row: {
+          activity_type: string
+          calories_burned: number | null
+          created_at: string
+          date: string
+          duration: number
+          id: string
+          intensity: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          calories_burned?: number | null
+          created_at?: string
+          date?: string
+          duration: number
+          id?: string
+          intensity?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          calories_burned?: number | null
+          created_at?: string
+          date?: string
+          duration?: number
+          id?: string
+          intensity?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      food_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      food_nutrient_values: {
+        Row: {
+          food_item_id: string
+          id: string
+          nutrient_id: string
+          value: number
+        }
+        Insert: {
+          food_item_id: string
+          id?: string
+          nutrient_id: string
+          value: number
+        }
+        Update: {
+          food_item_id?: string
+          id?: string
+          nutrient_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_nutrient_values_food_item_id_fkey"
+            columns: ["food_item_id"]
+            isOneToOne: false
+            referencedRelation: "food_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "food_nutrient_values_nutrient_id_fkey"
+            columns: ["nutrient_id"]
+            isOneToOne: false
+            referencedRelation: "nutrients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meal_food_items: {
+        Row: {
+          created_at: string
+          food_item_id: string
+          id: string
+          nutrition_entry_id: string
+          quantity: number
+        }
+        Insert: {
+          created_at?: string
+          food_item_id: string
+          id?: string
+          nutrition_entry_id: string
+          quantity: number
+        }
+        Update: {
+          created_at?: string
+          food_item_id?: string
+          id?: string
+          nutrition_entry_id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_food_items_food_item_id_fkey"
+            columns: ["food_item_id"]
+            isOneToOne: false
+            referencedRelation: "food_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meal_food_items_nutrition_entry_id_fkey"
+            columns: ["nutrition_entry_id"]
+            isOneToOne: false
+            referencedRelation: "nutrition_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nutrients: {
+        Row: {
+          id: string
+          name: string
+          unit: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          unit?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          unit?: string | null
+        }
+        Relationships: []
+      }
+      nutrition_entries: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          meal_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          meal_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          meal_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          birth_date: string | null
+          created_at: string
+          first_name: string | null
+          gender: string | null
+          height: number | null
+          id: string
+          last_name: string | null
+          updated_at: string
+          weight: number | null
+        }
+        Insert: {
+          birth_date?: string | null
+          created_at?: string
+          first_name?: string | null
+          gender?: string | null
+          height?: number | null
+          id: string
+          last_name?: string | null
+          updated_at?: string
+          weight?: number | null
+        }
+        Update: {
+          birth_date?: string | null
+          created_at?: string
+          first_name?: string | null
+          gender?: string | null
+          height?: number | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
+      recommendations: {
+        Row: {
+          assigned_by: string | null
+          category: string
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          priority: number | null
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          category: string
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          priority?: number | null
+          user_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          priority?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sleep_entries: {
+        Row: {
+          created_at: string
+          date: string
+          end_time: string | null
+          hours: number | null
+          id: string
+          notes: string | null
+          quality: string
+          start_time: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          end_time?: string | null
+          hours?: number | null
+          id?: string
+          notes?: string | null
+          quality: string
+          start_time?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          end_time?: string | null
+          hours?: number | null
+          id?: string
+          notes?: string | null
+          quality?: string
+          start_time?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: boolean
+      }
+      is_patient_of_doctor: {
+        Args: { _patient_user_id: string; _doctor_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "user" | "admin" | "doctor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +510,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["user", "admin", "doctor"],
+    },
   },
 } as const

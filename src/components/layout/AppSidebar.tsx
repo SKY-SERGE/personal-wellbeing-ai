@@ -9,6 +9,7 @@ import {
   MessageSquare,
   User,
   Settings,
+  LogOut
 } from "lucide-react";
 import {
   Sidebar,
@@ -23,46 +24,58 @@ import {
   SidebarMenuButton,
   SidebarTrigger
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const navigationItems = [
   { 
-    title: "Dashboard", 
+    title: "Tableau de bord", 
     path: "/", 
     icon: LayoutDashboard 
   },
   { 
-    title: "Data Entry", 
+    title: "Saisie de données", 
     path: "/data-entry", 
     icon: FileText 
   },
   { 
-    title: "Activity", 
+    title: "Activité", 
     path: "/activity", 
     icon: Activity 
   },
   { 
-    title: "History", 
+    title: "Historique", 
     path: "/history", 
     icon: History 
   },
   { 
-    title: "AI Assistant", 
+    title: "Assistant IA", 
     path: "/ai-assistant", 
     icon: MessageSquare 
   },
   { 
-    title: "Profile", 
+    title: "Profil", 
     path: "/profile", 
     icon: User 
   },
   { 
-    title: "Settings", 
+    title: "Paramètres", 
     path: "/settings", 
     icon: Settings 
   },
 ];
 
 const AppSidebar = () => {
+  const { signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   return (
     <Sidebar>
       <SidebarHeader className="p-4 flex items-center gap-2">
@@ -87,7 +100,7 @@ const AppSidebar = () => {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
@@ -109,8 +122,18 @@ const AppSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="px-4 py-3 text-xs text-muted-foreground">
-        WellnessAI v1.0 © 2025
+      <SidebarFooter className="px-4 py-3">
+        <Button 
+          onClick={handleSignOut} 
+          variant="outline" 
+          className="w-full justify-start"
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Déconnexion
+        </Button>
+        <div className="mt-2 text-xs text-muted-foreground text-center">
+          WellnessAI v1.0 © 2025
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
