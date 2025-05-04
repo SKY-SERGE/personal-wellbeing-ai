@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
 
 const SleepQuality = () => {
   // Sample data - hours of sleep per day
@@ -14,7 +14,20 @@ const SleepQuality = () => {
     { day: 'Sun', hours: 8.5, quality: 85 },
   ];
 
-  const CustomTooltip = ({ active, payload }) => {
+  // Define proper TypeScript types for the CustomTooltip component
+  type CustomTooltipProps = {
+    active?: boolean;
+    payload?: Array<{
+      value: number;
+      payload: {
+        day: string;
+        hours: number;
+        quality: number;
+      };
+    }>;
+  };
+
+  const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-2 border border-gray-200 rounded shadow text-sm">
