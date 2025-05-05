@@ -12,11 +12,25 @@ import Activity from "./pages/Activity";
 import History from "./pages/History";
 import AIAssistant from "./pages/AIAssistant";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import DoctorConsultation from "./pages/DoctorConsultation";
+import AdminPanel from "./pages/AdminPanel";
+import FAQ from "./pages/FAQ";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
 import PrivateRoute from "./components/auth/PrivateRoute";
+import { Suspense } from "react";
 
-const queryClient = new QueryClient();
+// Création du client de requête avec configuration pour éviter les erreurs de réseau
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -28,6 +42,7 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
             
+            {/* Routes principales */}
             <Route path="/" element={
               <PrivateRoute>
                 <AppLayout><Dashboard /></AppLayout>
@@ -66,10 +81,30 @@ const App = () => (
             
             <Route path="/settings" element={
               <PrivateRoute>
-                <AppLayout><Profile /></AppLayout>
+                <AppLayout><Settings /></AppLayout>
               </PrivateRoute>
             } />
             
+            {/* Nouvelles routes */}
+            <Route path="/doctor" element={
+              <PrivateRoute>
+                <AppLayout><DoctorConsultation /></AppLayout>
+              </PrivateRoute>
+            } />
+            
+            <Route path="/admin" element={
+              <PrivateRoute>
+                <AppLayout><AdminPanel /></AppLayout>
+              </PrivateRoute>
+            } />
+            
+            <Route path="/faq" element={
+              <PrivateRoute>
+                <AppLayout><FAQ /></AppLayout>
+              </PrivateRoute>
+            } />
+            
+            {/* Route 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

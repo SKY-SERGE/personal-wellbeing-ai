@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -17,78 +17,134 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Download } from "lucide-react";
+import { toast } from "sonner";
 
 // Sample historical data
 const nutritionHistory = [
-  { id: 1, date: "2025-05-04", meal: "Breakfast", calories: 450, description: "Oatmeal with berries and nuts" },
-  { id: 2, date: "2025-05-04", meal: "Lunch", calories: 650, description: "Quinoa salad with grilled chicken" },
-  { id: 3, date: "2025-05-04", meal: "Dinner", calories: 750, description: "Baked salmon with vegetables" },
-  { id: 4, date: "2025-05-03", meal: "Breakfast", calories: 400, description: "Scrambled eggs with toast" },
-  { id: 5, date: "2025-05-03", meal: "Lunch", calories: 600, description: "Turkey sandwich with side salad" },
+  { id: 1, date: "2025-05-04", meal: "Petit-déjeuner", calories: 450, description: "Flocons d'avoine avec baies et noix" },
+  { id: 2, date: "2025-05-04", meal: "Déjeuner", calories: 650, description: "Salade de quinoa avec poulet grillé" },
+  { id: 3, date: "2025-05-04", meal: "Dîner", calories: 750, description: "Saumon cuit au four avec légumes" },
+  { id: 4, date: "2025-05-03", meal: "Petit-déjeuner", calories: 400, description: "Œufs brouillés avec pain grillé" },
+  { id: 5, date: "2025-05-03", meal: "Déjeuner", calories: 600, description: "Sandwich à la dinde avec salade" },
 ];
 
 const exerciseHistory = [
-  { id: 1, date: "2025-05-04", type: "Running", duration: 30, intensity: "High", calories: 350 },
-  { id: 2, date: "2025-05-03", type: "Strength Training", duration: 45, intensity: "Moderate", calories: 300 },
-  { id: 3, date: "2025-05-02", type: "Yoga", duration: 60, intensity: "Low", calories: 200 },
-  { id: 4, date: "2025-05-01", type: "Cycling", duration: 40, intensity: "High", calories: 400 },
+  { id: 1, date: "2025-05-04", type: "Course", duration: 30, intensity: "Elevée", calories: 350 },
+  { id: 2, date: "2025-05-03", type: "Musculation", duration: 45, intensity: "Modérée", calories: 300 },
+  { id: 3, date: "2025-05-02", type: "Yoga", duration: 60, intensity: "Faible", calories: 200 },
+  { id: 4, date: "2025-05-01", type: "Vélo", duration: 40, intensity: "Elevée", calories: 400 },
 ];
 
 const sleepHistory = [
-  { id: 1, date: "2025-05-04", hours: 7.5, quality: "Good", notes: "Woke up once" },
-  { id: 2, date: "2025-05-03", hours: 6.0, quality: "Fair", notes: "Had trouble falling asleep" },
-  { id: 3, date: "2025-05-02", hours: 8.0, quality: "Excellent", notes: "Slept through the night" },
-  { id: 4, date: "2025-05-01", hours: 5.5, quality: "Poor", notes: "Restless sleep" },
+  { id: 1, date: "2025-05-04", hours: 7.5, quality: "Bonne", notes: "Réveillé une fois" },
+  { id: 2, date: "2025-05-03", hours: 6.0, quality: "Moyenne", notes: "Difficulté à s'endormir" },
+  { id: 3, date: "2025-05-02", hours: 8.0, quality: "Excellente", notes: "Sommeil ininterrompu" },
+  { id: 4, date: "2025-05-01", hours: 5.5, quality: "Mauvaise", notes: "Sommeil agité" },
 ];
 
 const History = () => {
-  const [dataType, setDataType] = React.useState("nutrition");
+  const [dataType, setDataType] = useState<string>("nutrition");
+  const [period, setPeriod] = useState<string>("week");
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' });
+    return date.toLocaleDateString("fr-FR", { year: 'numeric', month: 'short', day: 'numeric' });
   };
+  
+  const handleDataTypeChange = useCallback((value: string) => {
+    setDataType(value);
+  }, []);
+  
+  const handlePeriodChange = useCallback((value: string) => {
+    setPeriod(value);
+    // Ici, vous pourriez charger des données différentes en fonction de la période
+  }, []);
+
+  const handleExportData = useCallback(() => {
+    let dataToExport;
+    let filename;
+    
+    switch (dataType) {
+      case 'nutrition':
+        dataToExport = nutritionHistory;
+        filename = `nutrition_${period}_${new Date().toISOString().split('T')[0]}.csv`;
+        break;
+      case 'exercise':
+        dataToExport = exerciseHistory;
+        filename = `exercice_${period}_${new Date().toISOString().split('T')[0]}.csv`;
+        break;
+      case 'sleep':
+        dataToExport = sleepHistory;
+        filename = `sommeil_${period}_${new Date().toISOString().split('T')[0]}.csv`;
+        break;
+      default:
+        dataToExport = [];
+        filename = `donnees_${period}_${new Date().toISOString().split('T')[0]}.csv`;
+    }
+    
+    // En production, vous devriez convertir les données en CSV ici
+    console.log(`Exporting ${dataType} data for ${period}:`, dataToExport);
+    
+    toast.success(`Données exportées avec succès: ${filename}`);
+  }, [dataType, period]);
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Your History</h1>
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Votre historique</h1>
         <p className="text-muted-foreground">
-          View and analyze your historical health data.
+          Consultez et analysez vos données de santé historiques.
         </p>
       </div>
 
-      <div className="flex items-center justify-between">
-        <Select value={dataType} onValueChange={setDataType}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select data type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="nutrition">Nutrition</SelectItem>
-            <SelectItem value="exercise">Exercise</SelectItem>
-            <SelectItem value="sleep">Sleep</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Select value={dataType} onValueChange={handleDataTypeChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sélectionner un type de données" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="nutrition">Nutrition</SelectItem>
+              <SelectItem value="exercise">Exercice</SelectItem>
+              <SelectItem value="sleep">Sommeil</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Button variant="outline">Export Data</Button>
+          <Select value={period} onValueChange={handlePeriodChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sélectionner une période" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="week">Cette semaine</SelectItem>
+              <SelectItem value="month">Ce mois</SelectItem>
+              <SelectItem value="year">Cette année</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button variant="outline" onClick={handleExportData} className="flex items-center gap-2">
+          <Download className="h-4 w-4" />
+          <span>Exporter les données</span>
+        </Button>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>
             {dataType === "nutrition" 
-              ? "Nutrition History" 
+              ? "Historique de nutrition" 
               : dataType === "exercise" 
-                ? "Exercise History" 
-                : "Sleep History"
+                ? "Historique d'exercice" 
+                : "Historique de sommeil"
             }
           </CardTitle>
           <CardDescription>
             {dataType === "nutrition" 
-              ? "Your recent meals and nutrition information" 
+              ? "Vos repas récents et informations nutritionnelles" 
               : dataType === "exercise" 
-                ? "Your recent physical activities" 
-                : "Your recent sleep patterns"
+                ? "Vos activités physiques récentes" 
+                : "Vos habitudes de sommeil récentes"
             }
           </CardDescription>
         </CardHeader>
@@ -98,7 +154,7 @@ const History = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
-                  <TableHead>Meal</TableHead>
+                  <TableHead>Repas</TableHead>
                   <TableHead>Calories</TableHead>
                   <TableHead className="hidden md:table-cell">Description</TableHead>
                 </TableRow>
@@ -122,8 +178,8 @@ const History = () => {
                 <TableRow>
                   <TableHead>Date</TableHead>
                   <TableHead>Type</TableHead>
-                  <TableHead>Duration (min)</TableHead>
-                  <TableHead className="hidden md:table-cell">Intensity</TableHead>
+                  <TableHead>Durée (min)</TableHead>
+                  <TableHead className="hidden md:table-cell">Intensité</TableHead>
                   <TableHead>Calories</TableHead>
                 </TableRow>
               </TableHeader>
@@ -146,8 +202,8 @@ const History = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
-                  <TableHead>Hours</TableHead>
-                  <TableHead>Quality</TableHead>
+                  <TableHead>Heures</TableHead>
+                  <TableHead>Qualité</TableHead>
                   <TableHead className="hidden md:table-cell">Notes</TableHead>
                 </TableRow>
               </TableHeader>

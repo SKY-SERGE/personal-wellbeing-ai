@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 interface RecommendationCardProps {
   title: string;
@@ -14,7 +15,7 @@ const RecommendationCard = ({
   title,
   description,
   icon,
-  actionLabel = "View Details",
+  actionLabel = "Voir les détails",
   onAction = () => {},
 }: RecommendationCardProps) => {
   return (
@@ -25,14 +26,15 @@ const RecommendationCard = ({
         </div>
         <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
-      <CardContent className="flex-grow">
+      <CardContent className="flex-grow flex flex-col justify-between">
         <p className="text-muted-foreground">{description}</p>
         <Button 
           variant="ghost" 
-          className="mt-4 text-wellness-primary hover:text-wellness-primary hover:bg-wellness-primary/10"
+          className="mt-4 self-start text-wellness-primary hover:text-wellness-primary hover:bg-wellness-primary/10 flex items-center gap-1"
           onClick={onAction}
         >
           {actionLabel}
+          <ArrowRight className="h-4 w-4 ml-1" />
         </Button>
       </CardContent>
     </Card>
