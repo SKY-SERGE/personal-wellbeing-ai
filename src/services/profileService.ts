@@ -61,18 +61,35 @@ export const profileService = {
       throw error;
     }
     
+    // Extrait juste les valeurs de rôle du résultat et les renvoie comme un tableau de chaînes
     return data.map(r => r.role);
   },
 
   async getPatients(doctorId: string): Promise<Profile[]> {
+    // Correction de l'erreur : d'abord exécuter la subquery pour obtenir les IDs des patients
+    const { data: patientLinks, error: patientLinksError } = await supabase
+      .from('doctor_patients')
+      .select('user_id_patient')
+      .eq('user_id_doctor', doctorId);
+    
+    if (patientLinksError) {
+      console.error('Error fetching patient links:', patientLinksError);
+      throw patientLinksError;
+    }
+    
+    // Extraire les IDs des patients du résultat
+    const patientIds = patientLinks.map(link => link.user_id_patient);
+    
+    // Si aucun patient n'est trouvé, renvoyer un tableau vide
+    if (patientIds.length === 0) {
+      return [];
+    }
+    
+    // Utiliser les IDs des patients pour récupérer leurs profils
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
-      .in('id', supabase
-        .from('doctor_patients')
-        .select('user_id_patient')
-        .eq('user_id_doctor', doctorId)
-      );
+      .in('id', patientIds);
     
     if (error) {
       console.error('Error fetching patients:', error);
