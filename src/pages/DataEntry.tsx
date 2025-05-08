@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -141,7 +140,9 @@ const DataEntry = () => {
         hours: parseFloat(sleepDuration),
         quality: sleepQuality,
         notes: sleepNotes || undefined,
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        start_time: null,
+        end_time: null
       });
       
       toast.success("Données de sommeil enregistrées avec succès !");

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,7 +38,8 @@ type GoalsForm = {
 
 const Profile = () => {
   const { profile, updateProfile, updateProfileLoading } = useProfileData();
-  const { user } = supabase.auth.getUser();
+  const { data: userData } = supabase.auth.getUser();
+  const user = userData?.user;
   
   const [profileForm, setProfileForm] = useState<ProfileForm>({
     first_name: "",
@@ -115,10 +115,10 @@ const Profile = () => {
       await updateProfile({
         first_name: profileForm.first_name,
         last_name: profileForm.last_name,
-        age: profileForm.age ? parseInt(profileForm.age) : undefined,
         gender: profileForm.gender,
         height: profileForm.height ? parseFloat(profileForm.height) : undefined,
-        weight: profileForm.weight ? parseFloat(profileForm.weight) : undefined
+        weight: profileForm.weight ? parseFloat(profileForm.weight) : undefined,
+        age: profileForm.age ? parseInt(profileForm.age) : undefined
       });
       
       toast.success("Profile information updated successfully!");

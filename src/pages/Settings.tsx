@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { 
   Card, 
@@ -55,7 +54,7 @@ const Settings = () => {
           ...notifications,
           [key]: checked
         }
-      });
+      } as Partial<Profile>);
       toast.success(`Paramètre de notification mis à jour`);
     } catch (error) {
       toast.error("Erreur lors de la mise à jour des notifications");
@@ -68,7 +67,7 @@ const Settings = () => {
       await updateProfile({
         public_profile: publicProfile,
         data_sharing: dataSharing
-      });
+      } as Partial<Profile>);
       toast.success("Paramètres de confidentialité mis à jour");
     } catch (error) {
       toast.error("Erreur lors de la mise à jour des paramètres de confidentialité");
@@ -115,11 +114,15 @@ const Settings = () => {
   const handleSavePreferences = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const languageElement = document.getElementById('language') as HTMLSelectElement;
+      const timezoneElement = document.getElementById('timezone') as HTMLSelectElement;
+      const themeValue = document.querySelector('input[name="theme"]:checked') as HTMLInputElement;
+      
       await updateProfile({
-        language: (document.getElementById('language') as HTMLSelectElement).value,
-        timezone: (document.getElementById('timezone') as HTMLSelectElement).value,
-        theme: document.querySelector('input[name="theme"]:checked')?.value || 'auto'
-      });
+        language: languageElement.value,
+        timezone: timezoneElement.value,
+        theme: themeValue?.value || 'auto'
+      } as Partial<Profile>);
       toast.success("Préférences mises à jour avec succès");
     } catch (error) {
       toast.error("Erreur lors de la mise à jour des préférences");

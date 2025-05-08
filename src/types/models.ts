@@ -9,6 +9,25 @@ export interface Profile {
   weight: number | null;
   created_at: string;
   updated_at: string;
+  // Propriétés additionnelles
+  age?: number | null;
+  avatar_url?: string | null;
+  units?: string;
+  notification_preference?: string;
+  theme?: string;
+  daily_steps?: number;
+  active_minutes?: number;
+  sleep_goal?: number;
+  weight_goal?: number;
+  goal_notes?: string;
+  activity_streak?: number;
+  data_entries?: number;
+  wellness_score?: number;
+  notification_preferences?: Record<string, boolean>;
+  public_profile?: boolean;
+  data_sharing?: boolean;
+  language?: string;
+  timezone?: string;
 }
 
 export type UserRole = 'user' | 'admin' | 'doctor';
