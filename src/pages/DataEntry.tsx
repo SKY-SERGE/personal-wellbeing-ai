@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,60 +8,154 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Utensils, Dumbbell, Moon } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { nutritionService } from "@/services/nutritionService";
+import { exerciseService } from "@/services/exerciseService";
+import { sleepService } from "@/services/sleepService";
 
 const DataEntry = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const initialTab = searchParams.get('tab') || 'nutrition';
   const [activeTab, setActiveTab] = useState(initialTab);
+  const { user } = useAuth();
 
-  // State for nutrition form
+  // State pour le formulaire de nutrition
   const [mealType, setMealType] = useState<string>("");
   const [foodItems, setFoodItems] = useState<string>("");
   const [caloriesEstimate, setCaloriesEstimate] = useState<string>("");
+  const [nutritionLoading, setNutritionLoading] = useState(false);
   
-  // State for exercise form
+  // State pour le formulaire d'exercice
   const [activityType, setActivityType] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
   const [intensity, setIntensity] = useState<string>("");
+  const [exerciseLoading, setExerciseLoading] = useState(false);
   
-  // State for sleep form
+  // State pour le formulaire de sommeil
   const [sleepDuration, setSleepDuration] = useState<string>("");
   const [sleepQuality, setSleepQuality] = useState<string>("");
+  const [sleepNotes, setSleepNotes] = useState<string>("");
+  const [sleepLoading, setSleepLoading] = useState(false);
   
-  // Set the active tab based on URL parameter
+  // Mise à jour de l'URL lors du changement d'onglet
   useEffect(() => {
-    if (['nutrition', 'exercise', 'sleep'].includes(initialTab)) {
-      setActiveTab(initialTab);
+    navigate(`/data-entry?tab=${activeTab}`, { replace: true });
+  }, [activeTab, navigate]);
+  
+  const handleNutritionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
+      toast.error("Vous devez être connecté pour enregistrer des données");
+      return;
     }
-  }, [initialTab]);
-  
-  const handleNutritionSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success("Données nutritionnelles enregistrées avec succès !");
-    // Reset form
-    setMealType("");
-    setFoodItems("");
-    setCaloriesEstimate("");
+    
+    if (!mealType) {
+      toast.error("Veuillez sélectionner un type de repas");
+      return;
+    }
+    
+    setNutritionLoading(true);
+    
+    try {
+      await nutritionService.createNutritionEntry({
+        user_id: user.id,
+        meal_type: mealType,
+        date: new Date().toISOString().split('T')[0]
+      });
+      
+      toast.success("Données nutritionnelles enregistrées avec succès !");
+      
+      // Réinitialiser le formulaire
+      setMealType("");
+      setFoodItems("");
+      setCaloriesEstimate("");
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement des données nutritionnelles:", error);
+      toast.error("Erreur lors de l'enregistrement des données");
+    } finally {
+      setNutritionLoading(false);
+    }
   };
   
-  const handleExerciseSubmit = (e: React.FormEvent) => {
+  const handleExerciseSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Données d'exercice enregistrées avec succès !");
-    // Reset form
-    setActivityType("");
-    setDuration("");
-    setIntensity("");
+    
+    if (!user) {
+      toast.error("Vous devez être connecté pour enregistrer des données");
+      return;
+    }
+    
+    if (!activityType || !duration) {
+      toast.error("Veuillez remplir tous les champs requis");
+      return;
+    }
+    
+    setExerciseLoading(true);
+    
+    try {
+      await exerciseService.createExerciseEntry({
+        user_id: user.id,
+        activity_type: activityType,
+        duration: parseInt(duration),
+        intensity: intensity,
+        calories_burned: caloriesEstimate ? parseInt(caloriesEstimate) : undefined,
+        date: new Date().toISOString().split('T')[0]
+      });
+      
+      toast.success("Données d'exercice enregistrées avec succès !");
+      
+      // Réinitialiser le formulaire
+      setActivityType("");
+      setDuration("");
+      setIntensity("");
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement des données d'exercice:", error);
+      toast.error("Erreur lors de l'enregistrement des données");
+    } finally {
+      setExerciseLoading(false);
+    }
   };
   
-  const handleSleepSubmit = (e: React.FormEvent) => {
+  const handleSleepSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Données de sommeil enregistrées avec succès !");
-    // Reset form
-    setSleepDuration("");
-    setSleepQuality("");
+    
+    if (!user) {
+      toast.error("Vous devez être connecté pour enregistrer des données");
+      return;
+    }
+    
+    if (!sleepDuration || !sleepQuality) {
+      toast.error("Veuillez remplir tous les champs requis");
+      return;
+    }
+    
+    setSleepLoading(true);
+    
+    try {
+      await sleepService.createSleepEntry({
+        user_id: user.id,
+        hours: parseFloat(sleepDuration),
+        quality: sleepQuality,
+        notes: sleepNotes || undefined,
+        date: new Date().toISOString().split('T')[0]
+      });
+      
+      toast.success("Données de sommeil enregistrées avec succès !");
+      
+      // Réinitialiser le formulaire
+      setSleepDuration("");
+      setSleepQuality("");
+      setSleepNotes("");
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement des données de sommeil:", error);
+      toast.error("Erreur lors de l'enregistrement des données");
+    } finally {
+      setSleepLoading(false);
+    }
   };
 
   return (
@@ -137,7 +231,13 @@ const DataEntry = () => {
               </form>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button type="submit" form="nutrition-form">Enregistrer les données nutritionnelles</Button>
+              <Button 
+                type="submit" 
+                form="nutrition-form"
+                disabled={nutritionLoading}
+              >
+                {nutritionLoading ? "Enregistrement..." : "Enregistrer les données nutritionnelles"}
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -198,7 +298,13 @@ const DataEntry = () => {
               </form>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button type="submit" form="exercise-form">Enregistrer les données d'exercice</Button>
+              <Button 
+                type="submit" 
+                form="exercise-form"
+                disabled={exerciseLoading}
+              >
+                {exerciseLoading ? "Enregistrement..." : "Enregistrer les données d'exercice"}
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -241,13 +347,24 @@ const DataEntry = () => {
                   
                   <div className="grid gap-2">
                     <Label htmlFor="sleep-notes">Notes (Optionnel)</Label>
-                    <Textarea id="sleep-notes" placeholder="Notes supplémentaires sur votre sommeil" />
+                    <Textarea 
+                      id="sleep-notes" 
+                      placeholder="Notes supplémentaires sur votre sommeil" 
+                      value={sleepNotes}
+                      onChange={(e) => setSleepNotes(e.target.value)}
+                    />
                   </div>
                 </div>
               </form>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button type="submit" form="sleep-form">Enregistrer les données de sommeil</Button>
+              <Button 
+                type="submit" 
+                form="sleep-form"
+                disabled={sleepLoading}
+              >
+                {sleepLoading ? "Enregistrement..." : "Enregistrer les données de sommeil"}
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
