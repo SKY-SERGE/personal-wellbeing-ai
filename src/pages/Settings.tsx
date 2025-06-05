@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { 
   Card, 
@@ -15,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useProfileData } from "@/hooks/useProfileData";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Profile } from "@/types/models";
 import { 
   Bell, 
@@ -27,6 +27,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Settings = () => {
   const { profile, updateProfile, updateProfileLoading } = useProfileData();
+  const { theme, setTheme } = useTheme();
   const [notifications, setNotifications] = useState({
     email: true,
     app: true,
@@ -119,6 +120,9 @@ const Settings = () => {
       const timezoneValue = formData.get('timezone') as string;
       const themeValue = formData.get('theme') as string;
       
+      // Update theme in context and profile
+      setTheme(themeValue as 'light' | 'dark' | 'system');
+      
       await updateProfile({
         language: languageValue,
         timezone: timezoneValue,
@@ -148,8 +152,13 @@ const Settings = () => {
       // Paramètres de confidentialité
       setPublicProfile(profile.public_profile || false);
       setDataSharing(profile.data_sharing !== false); // par défaut à true si non défini
+      
+      // Sync theme from profile if available
+      if (profile.theme) {
+        setTheme(profile.theme as 'light' | 'dark' | 'system');
+      }
     }
-  }, [profile]);
+  }, [profile, setTheme]);
   
   return (
     <div className="space-y-6 animate-fade-in">
@@ -276,33 +285,42 @@ const Settings = () => {
                   <div>
                     <Label>Thème</Label>
                     <div className="grid grid-cols-3 gap-4 mt-1">
-                      <label className="p-3 bg-white border rounded-md text-center cursor-pointer hover:bg-gray-50">
+                      <label className={`p-3 border rounded-md text-center cursor-pointer transition-colors ${
+                        theme === 'light' ? 'bg-primary text-primary-foreground' : 'bg-white hover:bg-gray-50'
+                      }`}>
                         <input 
                           type="radio" 
                           name="theme" 
                           value="light" 
                           className="sr-only" 
-                          defaultChecked={profile?.theme === 'light'} 
+                          checked={theme === 'light'}
+                          onChange={() => {}} // Handled by form submission
                         />
                         <span>Clair</span>
                       </label>
-                      <label className="p-3 bg-gray-800 text-white border border-gray-700 rounded-md text-center cursor-pointer hover:bg-gray-700">
+                      <label className={`p-3 border rounded-md text-center cursor-pointer transition-colors ${
+                        theme === 'dark' ? 'bg-primary text-primary-foreground' : 'bg-gray-800 text-white border-gray-700 hover:bg-gray-700'
+                      }`}>
                         <input 
                           type="radio" 
                           name="theme" 
                           value="dark" 
                           className="sr-only" 
-                          defaultChecked={profile?.theme === 'dark'} 
+                          checked={theme === 'dark'}
+                          onChange={() => {}} // Handled by form submission
                         />
                         <span>Sombre</span>
                       </label>
-                      <label className="p-3 bg-gradient-to-r from-white to-gray-800 border rounded-md text-center cursor-pointer hover:bg-gray-50">
+                      <label className={`p-3 border rounded-md text-center cursor-pointer transition-colors ${
+                        theme === 'system' ? 'bg-primary text-primary-foreground' : 'bg-gradient-to-r from-white to-gray-800 hover:bg-gray-50'
+                      }`}>
                         <input 
                           type="radio" 
                           name="theme" 
-                          value="auto" 
+                          value="system" 
                           className="sr-only" 
-                          defaultChecked={!profile?.theme || profile.theme === 'auto'} 
+                          checked={theme === 'system'}
+                          onChange={() => {}} // Handled by form submission
                         />
                         <span>Auto</span>
                       </label>

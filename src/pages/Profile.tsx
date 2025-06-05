@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,8 +8,10 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FileUpload } from "@/components/ui/file-upload";
 import { toast } from "sonner";
 import { useProfileData } from "@/hooks/useProfileData";
+import { avatarService } from "@/services/avatarService";
 import { supabase } from "@/integrations/supabase/client";
 
 type ProfileForm = {
@@ -40,6 +41,7 @@ type GoalsForm = {
 const Profile = () => {
   const { profile, updateProfile, updateProfileLoading } = useProfileData();
   const [user, setUser] = useState<any>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   
   const [profileForm, setProfileForm] = useState<ProfileForm>({
     first_name: "",
@@ -173,9 +175,28 @@ const Profile = () => {
     }
   };
 
-  const handleUpdatePhoto = async () => {
-    // Simulating file upload - in a real app, you would use file input and handle file upload
-    toast.info("La fonctionnalité de mise à jour de photo sera bientôt disponible.");
+  const handleAvatarUpload = async (file: File) => {
+    if (!user) {
+      toast.error("User not authenticated");
+      return;
+    }
+
+    setAvatarUploading(true);
+    try {
+      const avatarUrl = await avatarService.uploadAvatar(file, user.id);
+      await updateProfile({ avatar_url: avatarUrl });
+      toast.success("Profile picture updated successfully!");
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      toast.error("Failed to upload profile picture");
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const handleUpdatePhoto = () => {
+    // This function is now handled by the FileUpload component
+    toast.info("Please use the upload button below to update your photo.");
   };
 
   return (
@@ -216,7 +237,14 @@ const Profile = () => {
                   <span className="font-medium">{profile?.wellness_score || 0}/100</span>
                 </div>
               </div>
-              <Button variant="outline" className="w-full" onClick={handleUpdatePhoto}>Update Photo</Button>
+              <FileUpload
+                onFileSelect={handleAvatarUpload}
+                loading={avatarUploading}
+                accept="image/*"
+                className="w-full"
+              >
+                {avatarUploading ? "Uploading..." : "Update Photo"}
+              </FileUpload>
             </div>
           </CardContent>
         </Card>

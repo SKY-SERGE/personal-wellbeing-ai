@@ -1,116 +1,64 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import AppLayout from "./components/layout/AppLayout";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import AppLayout from "@/components/layout/AppLayout";
+import PrivateRoute from "@/components/auth/PrivateRoute";
+import Index from "./pages/Index";
+import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import DataEntry from "./pages/DataEntry";
 import Activity from "./pages/Activity";
 import History from "./pages/History";
 import AIAssistant from "./pages/AIAssistant";
-import Profile from "./pages/Profile";
-import Settings from "./pages/Settings";
-import DoctorConsultation from "./pages/DoctorConsultation";
 import AdminPanel from "./pages/AdminPanel";
+import DoctorConsultation from "./pages/DoctorConsultation";
 import FAQ from "./pages/FAQ";
 import NotFound from "./pages/NotFound";
-import AuthPage from "./pages/AuthPage";
-import PrivateRoute from "./components/auth/PrivateRoute";
-import { Suspense } from "react";
+import "./App.css";
 
-// Création du client de requête avec configuration pour éviter les erreurs de réseau
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    },
-  },
-});
+const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<AuthPage />} />
-            
-            {/* Routes principales */}
-            <Route path="/" element={
-              <PrivateRoute>
-                <AppLayout><Dashboard /></AppLayout>
-              </PrivateRoute>
-            } />
-            
-            <Route path="/data-entry" element={
-              <PrivateRoute>
-                <AppLayout><DataEntry /></AppLayout>
-              </PrivateRoute>
-            } />
-            
-            <Route path="/activity" element={
-              <PrivateRoute>
-                <AppLayout><Activity /></AppLayout>
-              </PrivateRoute>
-            } />
-            
-            <Route path="/history" element={
-              <PrivateRoute>
-                <AppLayout><History /></AppLayout>
-              </PrivateRoute>
-            } />
-            
-            <Route path="/ai-assistant" element={
-              <PrivateRoute>
-                <AppLayout><AIAssistant /></AppLayout>
-              </PrivateRoute>
-            } />
-            
-            <Route path="/profile" element={
-              <PrivateRoute>
-                <AppLayout><Profile /></AppLayout>
-              </PrivateRoute>
-            } />
-            
-            <Route path="/settings" element={
-              <PrivateRoute>
-                <AppLayout><Settings /></AppLayout>
-              </PrivateRoute>
-            } />
-            
-            {/* Nouvelles routes */}
-            <Route path="/doctor" element={
-              <PrivateRoute>
-                <AppLayout><DoctorConsultation /></AppLayout>
-              </PrivateRoute>
-            } />
-            
-            <Route path="/admin" element={
-              <PrivateRoute>
-                <AppLayout><AdminPanel /></AppLayout>
-              </PrivateRoute>
-            } />
-            
-            <Route path="/faq" element={
-              <PrivateRoute>
-                <AppLayout><FAQ /></AppLayout>
-              </PrivateRoute>
-            } />
-            
-            {/* Route 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+          <ThemeProvider>
+            <Toaster />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/app" element={
+                  <PrivateRoute>
+                    <AppLayout />
+                  </PrivateRoute>
+                }>
+                  <Route index element={<Dashboard />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="data-entry" element={<DataEntry />} />
+                  <Route path="activity" element={<Activity />} />
+                  <Route path="history" element={<History />} />
+                  <Route path="ai-assistant" element={<AIAssistant />} />
+                  <Route path="admin" element={<AdminPanel />} />
+                  <Route path="doctor" element={<DoctorConsultation />} />
+                  <Route path="faq" element={<FAQ />} />
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </ThemeProvider>
+        </AuthProvider>
       </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+}
 
 export default App;
