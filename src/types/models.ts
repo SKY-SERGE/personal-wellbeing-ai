@@ -23,7 +23,7 @@ export interface Profile {
   activity_streak?: number;
   data_entries?: number;
   wellness_score?: number;
-  notification_preferences?: Record<string, boolean>;
+  notification_preferences?: any; // Changed from Record<string, boolean> to any to match Supabase Json type
   public_profile?: boolean;
   data_sharing?: boolean;
   language?: string;

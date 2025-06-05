@@ -19,7 +19,7 @@ export const profileService = {
       throw error;
     }
     
-    return data;
+    return data as Profile;
   },
   
   async updateProfile(profile: Partial<Profile>): Promise<Profile> {
@@ -41,7 +41,7 @@ export const profileService = {
       throw error;
     }
     
-    return data;
+    return data as Profile;
   },
   
   async getUserRole(): Promise<string[]> {
@@ -96,6 +96,6 @@ export const profileService = {
       throw error;
     }
     
-    return data;
+    return data as Profile[];
   }
 };
