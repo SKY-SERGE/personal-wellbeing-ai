@@ -253,37 +253,91 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active_minutes: number | null
+          activity_streak: number | null
+          age: number | null
+          avatar_url: string | null
           birth_date: string | null
           created_at: string
+          daily_steps: number | null
+          data_entries: number | null
+          data_sharing: boolean | null
           first_name: string | null
           gender: string | null
+          goal_notes: string | null
           height: number | null
           id: string
+          language: string | null
           last_name: string | null
+          notification_preference: string | null
+          notification_preferences: Json | null
+          public_profile: boolean | null
+          sleep_goal: number | null
+          theme: string | null
+          timezone: string | null
+          units: string | null
           updated_at: string
           weight: number | null
+          weight_goal: number | null
+          wellness_score: number | null
         }
         Insert: {
+          active_minutes?: number | null
+          activity_streak?: number | null
+          age?: number | null
+          avatar_url?: string | null
           birth_date?: string | null
           created_at?: string
+          daily_steps?: number | null
+          data_entries?: number | null
+          data_sharing?: boolean | null
           first_name?: string | null
           gender?: string | null
+          goal_notes?: string | null
           height?: number | null
           id: string
+          language?: string | null
           last_name?: string | null
+          notification_preference?: string | null
+          notification_preferences?: Json | null
+          public_profile?: boolean | null
+          sleep_goal?: number | null
+          theme?: string | null
+          timezone?: string | null
+          units?: string | null
           updated_at?: string
           weight?: number | null
+          weight_goal?: number | null
+          wellness_score?: number | null
         }
         Update: {
+          active_minutes?: number | null
+          activity_streak?: number | null
+          age?: number | null
+          avatar_url?: string | null
           birth_date?: string | null
           created_at?: string
+          daily_steps?: number | null
+          data_entries?: number | null
+          data_sharing?: boolean | null
           first_name?: string | null
           gender?: string | null
+          goal_notes?: string | null
           height?: number | null
           id?: string
+          language?: string | null
           last_name?: string | null
+          notification_preference?: string | null
+          notification_preferences?: Json | null
+          public_profile?: boolean | null
+          sleep_goal?: number | null
+          theme?: string | null
+          timezone?: string | null
+          units?: string | null
           updated_at?: string
           weight?: number | null
+          weight_goal?: number | null
+          wellness_score?: number | null
         }
         Relationships: []
       }

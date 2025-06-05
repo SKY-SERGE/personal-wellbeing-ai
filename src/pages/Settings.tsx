@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { 
   Card, 
@@ -113,14 +114,15 @@ const Settings = () => {
   const handleSavePreferences = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const languageElement = document.getElementById('language') as HTMLSelectElement;
-      const timezoneElement = document.getElementById('timezone') as HTMLSelectElement;
-      const themeValue = document.querySelector('input[name="theme"]:checked') as HTMLInputElement;
+      const formData = new FormData(e.target as HTMLFormElement);
+      const languageValue = formData.get('language') as string;
+      const timezoneValue = formData.get('timezone') as string;
+      const themeValue = formData.get('theme') as string;
       
       await updateProfile({
-        language: languageElement.value,
-        timezone: timezoneElement.value,
-        theme: themeValue?.value || 'auto'
+        language: languageValue,
+        timezone: timezoneValue,
+        theme: themeValue
       } as Partial<Profile>);
       toast.success("Préférences mises à jour avec succès");
     } catch (error) {
@@ -243,12 +245,12 @@ const Settings = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <form id="preferences-form" onSubmit={handleSavePreferences}>
+              <form onSubmit={handleSavePreferences}>
                 <div className="grid gap-4">
                   <div>
                     <Label htmlFor="language">Langue</Label>
                     <select 
-                      id="language" 
+                      name="language"
                       className="w-full mt-1 p-2 border rounded-md"
                       defaultValue={profile?.language || "fr"}
                     >
@@ -261,7 +263,7 @@ const Settings = () => {
                   <div>
                     <Label htmlFor="timezone">Fuseau horaire</Label>
                     <select 
-                      id="timezone" 
+                      name="timezone"
                       className="w-full mt-1 p-2 border rounded-md"
                       defaultValue={profile?.timezone || "Europe/Paris"}
                     >
@@ -274,26 +276,45 @@ const Settings = () => {
                   <div>
                     <Label>Thème</Label>
                     <div className="grid grid-cols-3 gap-4 mt-1">
-                      <label className="p-3 bg-white border rounded-md text-center cursor-pointer">
-                        <input type="radio" name="theme" value="light" className="sr-only" defaultChecked={profile?.theme === 'light'} />
+                      <label className="p-3 bg-white border rounded-md text-center cursor-pointer hover:bg-gray-50">
+                        <input 
+                          type="radio" 
+                          name="theme" 
+                          value="light" 
+                          className="sr-only" 
+                          defaultChecked={profile?.theme === 'light'} 
+                        />
                         <span>Clair</span>
                       </label>
-                      <label className="p-3 bg-gray-800 text-white border border-gray-700 rounded-md text-center cursor-pointer">
-                        <input type="radio" name="theme" value="dark" className="sr-only" defaultChecked={profile?.theme === 'dark'} />
+                      <label className="p-3 bg-gray-800 text-white border border-gray-700 rounded-md text-center cursor-pointer hover:bg-gray-700">
+                        <input 
+                          type="radio" 
+                          name="theme" 
+                          value="dark" 
+                          className="sr-only" 
+                          defaultChecked={profile?.theme === 'dark'} 
+                        />
                         <span>Sombre</span>
                       </label>
-                      <label className="p-3 bg-gradient-to-r from-white to-gray-800 border rounded-md text-center cursor-pointer">
-                        <input type="radio" name="theme" value="auto" className="sr-only" defaultChecked={!profile?.theme || profile.theme === 'auto'} />
+                      <label className="p-3 bg-gradient-to-r from-white to-gray-800 border rounded-md text-center cursor-pointer hover:bg-gray-50">
+                        <input 
+                          type="radio" 
+                          name="theme" 
+                          value="auto" 
+                          className="sr-only" 
+                          defaultChecked={!profile?.theme || profile.theme === 'auto'} 
+                        />
                         <span>Auto</span>
                       </label>
                     </div>
                   </div>
+                  
+                  <Button type="submit" disabled={updateProfileLoading}>
+                    {updateProfileLoading ? "Sauvegarde..." : "Sauvegarder les préférences"}
+                  </Button>
                 </div>
               </form>
             </CardContent>
-            <CardFooter>
-              <Button type="submit" form="preferences-form">Sauvegarder les préférences</Button>
-            </CardFooter>
           </Card>
         </TabsContent>
         
@@ -354,7 +375,9 @@ const Settings = () => {
               </form>
             </CardContent>
             <CardFooter>
-              <Button onClick={handlePrivacyUpdate}>Mettre à jour les paramètres</Button>
+              <Button onClick={handlePrivacyUpdate} disabled={updateProfileLoading}>
+                {updateProfileLoading ? "Mise à jour..." : "Mettre à jour les paramètres"}
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>

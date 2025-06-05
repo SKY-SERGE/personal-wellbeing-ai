@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -124,9 +125,9 @@ const Profile = () => {
         first_name: profileForm.first_name,
         last_name: profileForm.last_name,
         gender: profileForm.gender,
-        height: profileForm.height ? parseFloat(profileForm.height) : undefined,
-        weight: profileForm.weight ? parseFloat(profileForm.weight) : undefined,
-        age: profileForm.age ? parseInt(profileForm.age) : undefined
+        height: profileForm.height ? parseFloat(profileForm.height) : null,
+        weight: profileForm.weight ? parseFloat(profileForm.weight) : null,
+        age: profileForm.age ? parseInt(profileForm.age) : null
       });
       
       toast.success("Profile information updated successfully!");
@@ -158,10 +159,10 @@ const Profile = () => {
     
     try {
       await updateProfile({
-        daily_steps: goalsForm.daily_steps ? parseInt(goalsForm.daily_steps) : undefined,
-        active_minutes: goalsForm.active_minutes ? parseInt(goalsForm.active_minutes) : undefined,
-        sleep_goal: goalsForm.sleep_goal ? parseFloat(goalsForm.sleep_goal) : undefined,
-        weight_goal: goalsForm.weight_goal ? parseFloat(goalsForm.weight_goal) : undefined,
+        daily_steps: goalsForm.daily_steps ? parseInt(goalsForm.daily_steps) : null,
+        active_minutes: goalsForm.active_minutes ? parseInt(goalsForm.active_minutes) : null,
+        sleep_goal: goalsForm.sleep_goal ? parseFloat(goalsForm.sleep_goal) : null,
+        weight_goal: goalsForm.weight_goal ? parseFloat(goalsForm.weight_goal) : null,
         goal_notes: goalsForm.goal_notes
       });
       
@@ -235,7 +236,7 @@ const Profile = () => {
                   <CardDescription>Update your personal details.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form id="personal-form" onSubmit={handleSavePersonal}>
+                  <form onSubmit={handleSavePersonal}>
                     <div className="grid gap-6">
                       <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
@@ -322,18 +323,17 @@ const Profile = () => {
                           />
                         </div>
                       </div>
+                      
+                      <Button 
+                        type="submit" 
+                        disabled={updateProfileLoading}
+                        className="w-full"
+                      >
+                        {updateProfileLoading ? "Saving..." : "Save Changes"}
+                      </Button>
                     </div>
                   </form>
                 </CardContent>
-                <div className="p-6 pt-0 flex justify-end">
-                  <Button 
-                    type="submit" 
-                    form="personal-form" 
-                    disabled={updateProfileLoading}
-                  >
-                    {updateProfileLoading ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
               </Card>
             </TabsContent>
             
@@ -344,7 +344,7 @@ const Profile = () => {
                   <CardDescription>Customize your app experience.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form id="preferences-form" onSubmit={handleSavePreferences}>
+                  <form onSubmit={handleSavePreferences}>
                     <div className="grid gap-6">
                       <div className="grid gap-2">
                         <Label htmlFor="units">Measurement Units</Label>
@@ -395,18 +395,17 @@ const Profile = () => {
                           </SelectContent>
                         </Select>
                       </div>
+                      
+                      <Button 
+                        type="submit" 
+                        disabled={updateProfileLoading}
+                        className="w-full"
+                      >
+                        {updateProfileLoading ? "Saving..." : "Save Preferences"}
+                      </Button>
                     </div>
                   </form>
                 </CardContent>
-                <div className="p-6 pt-0 flex justify-end">
-                  <Button 
-                    type="submit" 
-                    form="preferences-form" 
-                    disabled={updateProfileLoading}
-                  >
-                    {updateProfileLoading ? "Saving..." : "Save Preferences"}
-                  </Button>
-                </div>
               </Card>
             </TabsContent>
             
@@ -417,7 +416,7 @@ const Profile = () => {
                   <CardDescription>Set your health and wellness targets.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form id="goals-form" onSubmit={handleSaveGoals}>
+                  <form onSubmit={handleSaveGoals}>
                     <div className="grid gap-6">
                       <div className="grid gap-2">
                         <Label htmlFor="daily_steps">Daily Steps Goal</Label>
@@ -475,18 +474,17 @@ const Profile = () => {
                           onChange={handleGoalsFormChange}
                         />
                       </div>
+                      
+                      <Button 
+                        type="submit" 
+                        disabled={updateProfileLoading}
+                        className="w-full"
+                      >
+                        {updateProfileLoading ? "Saving..." : "Save Goals"}
+                      </Button>
                     </div>
                   </form>
                 </CardContent>
-                <div className="p-6 pt-0 flex justify-end">
-                  <Button 
-                    type="submit" 
-                    form="goals-form" 
-                    disabled={updateProfileLoading}
-                  >
-                    {updateProfileLoading ? "Saving..." : "Save Goals"}
-                  </Button>
-                </div>
               </Card>
             </TabsContent>
           </Tabs>
