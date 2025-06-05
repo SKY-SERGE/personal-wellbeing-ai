@@ -1,16 +1,13 @@
 
 import React, { useEffect } from "react";
+import { Outlet } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "./AppSidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useProfileData } from "@/hooks/useProfileData";
 
-interface AppLayoutProps {
-  children: React.ReactNode;
-}
-
-const AppLayout = ({ children }: AppLayoutProps) => {
+const AppLayout = () => {
   const { user, loading } = useAuth();
   const { profile } = useProfileData();
   const navigate = useNavigate();
@@ -42,7 +39,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             </div>
           </header>
           <main className="flex-1 p-4 md:p-6 overflow-y-auto">
-            {children}
+            <Outlet />
           </main>
         </div>
       </div>
