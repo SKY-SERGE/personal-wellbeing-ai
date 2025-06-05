@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useProfileData } from "@/hooks/useProfileData";
+import { Profile } from "@/types/models";
 import { 
   Bell, 
   Settings as SettingsIcon, 
@@ -42,18 +43,16 @@ const Settings = () => {
   const [dataSharing, setDataSharing] = useState(true);
   
   const handleNotificationChange = async (key: string, checked: boolean) => {
-    setNotifications(prev => ({
-      ...prev,
+    const newNotifications = {
+      ...notifications,
       [key]: checked
-    }));
+    };
+    setNotifications(newNotifications);
     
     try {
       // Sauvegarder dans la BD les préférences de notification
       await updateProfile({
-        notification_preferences: {
-          ...notifications,
-          [key]: checked
-        }
+        notification_preferences: newNotifications
       } as Partial<Profile>);
       toast.success(`Paramètre de notification mis à jour`);
     } catch (error) {
@@ -135,7 +134,13 @@ const Settings = () => {
     if (profile) {
       // Paramètres de notification
       if (profile.notification_preferences) {
-        setNotifications(profile.notification_preferences);
+        // Ensure we have all required keys with defaults
+        setNotifications({
+          email: profile.notification_preferences.email ?? true,
+          app: profile.notification_preferences.app ?? true,
+          reminders: profile.notification_preferences.reminders ?? true,
+          updates: profile.notification_preferences.updates ?? false,
+        });
       }
       
       // Paramètres de confidentialité

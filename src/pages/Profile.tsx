@@ -38,8 +38,7 @@ type GoalsForm = {
 
 const Profile = () => {
   const { profile, updateProfile, updateProfileLoading } = useProfileData();
-  const { data: userData } = supabase.auth.getUser();
-  const user = userData?.user;
+  const [user, setUser] = useState<any>(null);
   
   const [profileForm, setProfileForm] = useState<ProfileForm>({
     first_name: "",
@@ -64,6 +63,15 @@ const Profile = () => {
     weight_goal: "",
     goal_notes: ""
   });
+
+  // Get current user on component mount
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      setUser(userData?.user);
+    };
+    getCurrentUser();
+  }, []);
   
   // Initialize form data from profile
   useEffect(() => {
